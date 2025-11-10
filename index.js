@@ -74,6 +74,20 @@ async function run() {
       res.send(result);
     });
 
+    // -----------------  CRUD -----------------
+    // GET all orders
+    app.get("/orders", async (req, res) => {
+      const orders = await ordersCollection.find().toArray();
+      res.send(orders);
+    });
+
+    // GET orders by user email
+    app.get("/orders/user/:email", async (req, res) => {
+      const email = req.params.email;
+      const orders = await ordersCollection.find({ email }).toArray();
+      res.send(orders);
+    });
+
     // Ping MongoDB
     await client.db("admin").command({ ping: 1 });
     console.log("MongoDB connected successfully!");
