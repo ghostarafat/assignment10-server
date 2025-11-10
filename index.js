@@ -88,6 +88,24 @@ async function run() {
       res.send(orders);
     });
 
+    // POST new order
+    app.post("/orders", async (req, res) => {
+      const newOrder = req.body;
+      const result = await ordersCollection.insertOne(newOrder);
+      res.send(result);
+    });
+
+    // PUT update order
+    app.put("/orders/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedData = { $set: req.body };
+      const result = await ordersCollection.updateOne(
+        { _id: new ObjectId(id) },
+        updatedData
+      );
+      res.send(result);
+    });
+
     // Ping MongoDB
     await client.db("admin").command({ ping: 1 });
     console.log("MongoDB connected successfully!");
