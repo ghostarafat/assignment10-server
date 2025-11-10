@@ -31,7 +31,56 @@ async function run() {
     const listingsCollection = db.collection("listings");
     const ordersCollection = db.collection("orders");
 
-    
+    // ----------------- LISTINGS CRUD -----------------
+    // GET all listings
+    app.get("/listings", async (req, res) => {
+      const listings = await listingsCollection.find().toArray();
+      res.send(listings);
+    });
+
+    // GET single listing by ID
+    app.get("/listings/:id", async (req, res) => {
+      const id = req.params.id;
+      const listing = await listingsCollection.findOne({
+        _id: new ObjectId(id),
+      });
+      res.send(listing);
+    });
+
+    // POST new listing
+    app.post("/listings", async (req, res) => {
+      const newListing = req.body;
+      const result = await listingsCollection.insertOne(newListing);
+      res.send(result);
+    });
+
+    // PUT update listing
+    app.put("/listings/:id", async (req, res) => {
+      const id = req.params.id;
+      const updatedData = { $set: req.body };
+      const result = await listingsCollection.updateOne(
+        { _id: new ObjectId(id) },
+        updatedData
+      );
+      res.send(result);
+    });
+
+    // DELETE listing
+    app.delete("/listings/:id", async (req, res) => {
+      const id = req.params.id;
+      const result = await listingsCollection.deleteOne({
+        _id: new ObjectId(id),
+      });
+      res.send(result);
+    });
+
+    // Ping MongoDB
+    await client.db("admin").command({ ping: 1 });
+    console.log("MongoDB connected successfully!");
+  } finally {
+    // Optional: Do not close client, keep server running
+  }
+}
 
 run().catch(console.dir);
 
